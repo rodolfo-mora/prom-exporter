@@ -15,27 +15,28 @@ type Systole struct {
 }
 
 type API struct {
-	Exporter exporter.Prometheus
+	exporter exporter.Prometheus
+	router   *mux.Router
 }
 
-func NewAPI() API {
+func NewAPI(r *mux.Router) API {
 	a := API{
-		Exporter: exporter.NewPrometheusExporter(),
+		exporter: exporter.NewPrometheusExporter(),
+		router:   r,
 	}
 
-	go a.Exporter.Export()
-	go a.Exporter.RandomHostDown()
+	go a.exporter.Export()
+	go a.exporter.RandomHostDown()
 	return a
 }
 
 func (a *API) RegisterRoutes() {
 	log.Println("Launching API")
-	r := mux.NewRouter()
-	r.HandleFunc("/api/v1/hostcheck", a.Beat).Methods("POST")
-	log.Fatal(http.ListenAndServe(":8080", r))
+	a.router.HandleFunc("/api/v1/hostcheck", a.Hostcheck).Methods("POST")
+	log.Fatal(http.ListenAndServe(":8080", a.router))
 }
 
-func (a *API) Beat(w http.ResponseWriter, r *http.Request) {
+func (a *API) Hostcheck(w http.ResponseWriter, r *http.Request) {
 	var beat Systole
 	body, err := ioutil.ReadAll(r.Body)
 	handleError(err)
@@ -43,8 +44,7 @@ func (a *API) Beat(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, &beat)
 	handleError(err)
 
-	a.Exporter.Register(beat.Name)
-	// a.Exporter.Track(beat.Name)
+	a.exporter.Register(beat.Name)
 }
 
 func handleError(err error) {
