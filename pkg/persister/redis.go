@@ -34,7 +34,7 @@ func (r RedisPersister) Delete(key string) error {
 	return delete(r.ctx, key, r.cli)
 }
 
-func getRedisClient() *redis.Client {
+func NewRedisClient() *redis.Client {
 	return redis.NewClient(&redis.Options{
 		Addr:       "localhost:6379",
 		Password:   "", // no password set

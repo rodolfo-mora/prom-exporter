@@ -1,11 +1,13 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"prom-exporter/pkg/exporter"
+	"prom-exporter/pkg/persister"
 
 	"github.com/gorilla/mux"
 )
@@ -15,14 +17,18 @@ type Systole struct {
 }
 
 type API struct {
-	exporter exporter.Prometheus
-	router   *mux.Router
+	exporter  exporter.Prometheus
+	router    *mux.Router
+	persister persister.Persister
 }
 
 func NewAPI(r *mux.Router) API {
+	ctx := context.TODO()
+	cli := persister.NewRedisClient()
 	a := API{
-		exporter: exporter.NewPrometheusExporter(),
-		router:   r,
+		exporter:  exporter.NewPrometheusExporter(),
+		router:    r,
+		persister: persister.NewRedisPersister(ctx, cli),
 	}
 
 	go a.exporter.Export()

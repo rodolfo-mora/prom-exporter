@@ -53,7 +53,11 @@ func (p *Prometheus) Track(name string) {
 
 func (p Prometheus) RandomHostDown() {
 	for range time.Tick(60 * time.Second) {
-		p.HostDown("ninja.test.123")
+		p.HostDown("host51.something.com")
+		p.HostDown("host38.something.com")
+		p.HostDown("host17.something.com")
+		p.HostDown("host18.something.com")
+		p.HostDown("host35.something.com")
 	}
 }
 
