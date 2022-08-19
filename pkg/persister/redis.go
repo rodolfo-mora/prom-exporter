@@ -41,7 +41,6 @@ func NewRedisClient() *redis.Client {
 		DB:         0,  // use default DB
 		MaxRetries: 3,
 	})
-
 }
 
 func insert(ctx context.Context, key string, value interface{}, rdb *redis.Client) error {
