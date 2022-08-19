@@ -15,9 +15,9 @@ type RedisPersister struct {
 // Returns an instance of RedisPersister interface.
 //   ctx context.Context
 //   cli *redis.Client
-func NewRedisPersister(cli *redis.Client) RedisPersister {
+func NewRedisPersister(ctx context.Context, cli *redis.Client) RedisPersister {
 	return RedisPersister{
-		ctx: context.TODO(),
+		ctx: ctx,
 		cli: cli,
 	}
 }
